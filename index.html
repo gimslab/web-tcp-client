@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>tcp client</title>
+    <script src="./js/jquery-1.5.min.js"></script>
+    <script src="./js/jquery.mousewheel-min.js"></script>
+    <script src="./js/jquery.terminal-0.3.6.js"></script>
+    <link href="./css/jquery.terminal.css" rel="stylesheet"/>
+  </head>
+  <body>
+<script>
+
+const net = require('net');
+
+const client = net.connect({host: 'n54l', port:9999}, () => {
+	$('body').terminal().echo('connected to server!');
+});
+
+
+
+jQuery(document).ready(function($) {
+
+	$('body').terminal(function(command, term) {
+		client.write(command+'\n');
+	}, {prompt: '> '});
+
+	client.on('data', (data) => {
+		$('body').terminal().echo(data);
+	});
+	client.on('end', () => {
+		$('body').terminal().echo('disconnected from server');
+	});
+
+});
+</script>
+
+
+  </body>
+</html>
