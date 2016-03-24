@@ -3,38 +3,39 @@
   <head>
     <meta charset="UTF-8">
     <title>tcp client</title>
-    <script src="./js/jquery-1.5.min.js"></script>
+    <script src="./js/jquery-1.7.2.min.js"></script>
     <script src="./js/jquery.mousewheel-min.js"></script>
-    <script src="./js/jquery.terminal-0.3.6.js"></script>
+    <script src="./js/jquery.terminal-0.9.3.min.js"></script>
     <link href="./css/jquery.terminal.css" rel="stylesheet"/>
   </head>
-  <body>
 <script>
 
 const net = require('net');
 
-const client = net.connect({host: 'n54l', port:9999}, () => {
-	$('body').terminal().echo('connected to server!');
+const client = net.connect({host: 'finance-prod02-mp', port:9999}, () => {
+	//$('body').terminal().echo('connected to server!');
+	$('#term').terminal().echo('connected to server!');
 });
-
-
 
 jQuery(document).ready(function($) {
 
-	$('body').terminal(function(command, term) {
+	// $('body').terminal(function(command, term) {
+	$('#term').terminal(function(command, term) {
 		client.write(command+'\n');
-	}, {prompt: '> '});
+	}, {prompt: '> ', height: 500});
 
 	client.on('data', (data) => {
-		$('body').terminal().echo(data);
+		$('#term').terminal().echo(data);
 	});
 	client.on('end', () => {
-		$('body').terminal().echo('disconnected from server');
+		$('#term').terminal().echo('disconnected from server');
 	});
 
 });
 </script>
 
-
-  </body>
+<body>
+<div><a href='#'>checkSale</a></div>
+<div id='term'></div>
+</body>
 </html>
