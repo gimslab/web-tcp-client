@@ -12,20 +12,23 @@
 
 const net = require('net');
 
-const client = net.connect({host: 'finance-prod02-mp', port:9999}, () => {
-	//$('body').terminal().echo('connected to server!');
+// const client = net.connect({host: 'finance-prod02-mp', port:9999}, () => {
+const client = net.connect({host: 'localhost', port:9999}, () => {
 	$('#term').terminal().echo('connected to server!');
 });
 
+const fstream = require('fs').createWriteStream('web-tcp-client.log', {flags:'w+'});
+
 jQuery(document).ready(function($) {
 
-	// $('body').terminal(function(command, term) {
 	$('#term').terminal(function(command, term) {
+		fstream.write(command+'\n');
 		client.write(command+'\n');
 	}, {prompt: '> ', height: 500});
 
 	client.on('data', (data) => {
 		$('#term').terminal().echo(data);
+		fstream.write(data);
 	});
 	client.on('end', () => {
 		$('#term').terminal().echo('disconnected from server');
