@@ -12,11 +12,16 @@
 
 const version = 0.1;
 const net = require('net');
+const fs  = require('fs');
+
+const fstream = fs.createWriteStream('web-tcp-client.log', {flags:'w+'});
+const lastRespFilename = 'last-resp.csv';
 
 var client;
 var latestVersion;
 
-const fstream = require('fs').createWriteStream('web-tcp-client.log', {flags:'w+'});
+var lastRespFile = fs.createWriteStream(lastRespFilename, {flags:'w'});
+
 
 jQuery(document).ready(function($) {
 
@@ -26,11 +31,22 @@ jQuery(document).ready(function($) {
 });
 
 function initTerm(){
+
 	$('#term').terminal(function(command, term) {
+
 		fstream.write(command+'\n');
-		if (command.length>0)
-			client.write(command+'\n');
-	}, {prompt: '> ', height: 690
+
+		if (command.length<1)
+			return;
+
+		if(lastRespFile)
+			lastRespFile.end();
+		lastRespFile = fs.createWriteStream(lastRespFilename, {flags:'w'});
+
+		$('#term').terminal().pause();
+		client.write(command+'\n');
+
+	}, {prompt: 'aptools> ', height: 690
 		, completion: ['checkSale', 'checkSaleDiff', 'getKan']
 	});
 	$('#term').terminal().clear();
@@ -58,15 +74,14 @@ function connectToServer(){
 
 	client = net.connect({host: '10.10.168.16', port:9999}, () => {
 		echo('connected to server!');
+		echo('\n');
 	});
 
 	client.on('data', (data) => {
 		echo(data);
 		fstream.write(data);
-		require('fs').writeFile('last-resp.csv', data, function(err){
-			if(err)
-				return $('#term').terminal().echo(err);
-		});
+		lastRespFile.write(data);
+		$('#term').terminal().resume();
 	});
 
 	client.on('end', () => {
