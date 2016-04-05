@@ -1,0 +1,9 @@
+{
+  "name"    : "aptools-client",
+  "version" : "0.1",
+  "main"    : "main.js",
+  "devDependencies": {
+    "electron-prebuilt": "^0.37.4"
+  }
+
+}
