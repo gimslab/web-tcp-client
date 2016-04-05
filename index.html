@@ -10,17 +10,22 @@
   </head>
 <script>
 
+const version = 0.1;
 const net = require('net');
 
-// const client = net.connect({host: 'localhost', port:9999}, () => {
-const client = net.connect({host: '10.10.168.16', port:9999}, () => {
-	$('#term').terminal().echo('connected to server!');
-});
+var client;
+var latestVersion;
 
 const fstream = require('fs').createWriteStream('web-tcp-client.log', {flags:'w+'});
 
 jQuery(document).ready(function($) {
 
+	initTerm();
+	checkVersion();
+	setTimeout(connectToServer, 1500);
+});
+
+function initTerm(){
 	$('#term').terminal(function(command, term) {
 		fstream.write(command+'\n');
 		if (command.length>0)
@@ -28,9 +33,35 @@ jQuery(document).ready(function($) {
 	}, {prompt: '> ', height: 690
 		, completion: ['checkSale', 'checkSaleDiff', 'getKan']
 	});
+	$('#term').terminal().clear();
+}
+
+function echo(str){
+	$('#term').terminal().echo(str);
+}
+
+function checkVersion(){
+	echo('version = '+version);
+	echo('checking latest version ...');
+	require('https').get('https://raw.githubusercontent.com/gimslab/web-tcp-client/master/latest-version.txt', (resp) => {
+		resp.on('data', (data) => {
+			echo('latest version: '+data);
+		});
+	}).on('error', (e) => {
+		echo(e);
+	});
+}
+
+function connectToServer(){
+
+	echo('connecting to server...');
+
+	client = net.connect({host: '10.10.168.16', port:9999}, () => {
+		echo('connected to server!');
+	});
 
 	client.on('data', (data) => {
-		$('#term').terminal().echo(data);
+		echo(data);
 		fstream.write(data);
 		require('fs').writeFile('last-resp.csv', data, function(err){
 			if(err)
@@ -39,11 +70,12 @@ jQuery(document).ready(function($) {
 	});
 
 	client.on('end', () => {
-		$('#term').terminal().echo('disconnected from server');
+		echo('disconnected from server');
 	});
+}
 
-});
 </script>
+
 
 <body>
 <div><a href='last-resp.csv'>last-resp.csv</a></div>
