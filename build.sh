@@ -16,4 +16,4 @@ tar cfj aptools-client-linux-ia32-$VER.tar.bz2 aptools-client-linux-ia32/ && rm 
 tar cfj aptools-client-linux-x64-$VER.tar.bz2 aptools-client-linux-x64/ && rm -rf aptools-client-linux-x64/
 zip -r aptools-client-win32-ia32-$VER.zip aptools-client-win32-ia32/ && rm -rf aptools-client-win32-ia32/
 zip -r aptools-client-win32-x64-$VER.zip aptools-client-win32-x64/ && rm -rf aptools-client-win32-x64/
-
+zip -r aptools-client-mas-x64-$VER.zip aptools-client-mas-x64/ && rm -rf aptools-client-mas-x64/
